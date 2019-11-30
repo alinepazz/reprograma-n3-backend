@@ -42,7 +42,7 @@ const add = (request, response) => {
     return response.status(400).send('bota a senha aí')
   }
   const senhaCriptografada = bcrypt.hashSync(request.body.senha)
-  request.body.senha = senhaCriptografada // aqui to pegando a senha do body e salvando no formato senha criptografada
+  request.body.senha = senhaCriptografada
   const novoTreinador = new treinadoresModel(request.body)
 
   novoTreinador.save((error) => {
@@ -54,20 +54,17 @@ const add = (request, response) => {
   })
 }
 
-const login = async (request, response) =>{
-const email = request.body.email 
-const senha = request.body.senha 
-const treinador = await treinadoresModel.findOne({email}) // retornando um treinador objeto inteiro, achando o treinando o treinador pelo email
-if (!treinador) {
-  return response.status(401).send('E-mail inválido')
-}
-const senhaValida = bcrypt.compareSync(senha, treinador.senha) // aqui retorna um boolean comparando a senha do body com a do banco e a salvando na senhaValida
+const login = async (request, response) => {
+  const email = request.body.email
+  const senha = request.body.senha
+  const treinador = await treinadoresModel.findOne({ email })
+  const senhaValida = bcrypt.compareSync(senha, treinador.senha)
 
-if(!senhaValida) {
-return response.status(401).send('Senha inválida')
-}
-return response.status(200).send('Usuário logado, mané!')
+  if (senhaValida) {
+    return response.status(200).send('Usuário logado')
+  }
 
+  return response.status(401).send('Usuário ou senha inválidos')
 }
 
 const remove = (request, response) => {
@@ -145,8 +142,8 @@ const treinarPokemon = async (request, response) => {
 }
 
 const getPokemonById = async (request, response) => {
-  const treinadorId = request.params.treinadorId
-  const pokemonId = request.params.pokemonId
+  const treinadorId = request.body.treinadorId
+  const pokemonId = request.body.pokemonId
   const treinador = await treinadoresModel.findById(treinadorId)
   const pokemon = treinador.pokemons.find((pokemon) => {
     return pokemonId == pokemon._id
@@ -160,8 +157,8 @@ const getPokemonById = async (request, response) => {
 }
 
 const getAllPokemons = async (request, response) => {
-  const treinadorId = request.params.treinadorId
-  const treinador = await treinadoresModel.findById(treinadorId)
+  const treinadorId = request.params.id
+  const treinador = await treinadoresModel.findById(id)
 
   if (treinador) {
     return response.status(200).send(treinador.pokemons)
@@ -204,7 +201,5 @@ module.exports = {
   treinarPokemon,
   getPokemonById,
   updatePokemon,
-  getAllPokemons,
   login
-
 }
