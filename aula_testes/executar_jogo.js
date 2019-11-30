@@ -6,18 +6,20 @@ const rl = readline.createInterface({
   output: process.stdout
 })
 
-const perguntar = () => {
-    rl.question('Adivinhe o número secreto: ', resposta => {
-      const resultado = jogo(numeroGerado, resposta)
+const perguntar = (readLine = rl) => {
+  readLine.question('Adivinhe o número secreto: ', resposta => {
+    const resultado = jogo(numeroGerado, resposta)
 
       if (resultado.acertou) {
         console.log('Parabéns! Você acertou.')
         return rl.close() 
       }
 
-      console.log(resultado.mensagemErro)
-      perguntar()
+    console.log(resultado.mensagemErro)
+    perguntar()
   })
 }
 
 perguntar()
+
+module.exports = perguntar
