@@ -39,7 +39,7 @@ const getById = (request, response) => {
 
 const add = (request, response) => {
   const senhaCriptografada = bcrypt.hashSync(request.body.senha)
-  request.body.senha = senhaCriptografada
+  request.body.senha = senhaCriptografada // aqui to pegando a senha do body e salvando no formato senha criptografada
   const novoTreinador = new treinadoresModel(request.body)
 
   novoTreinador.save((error) => {
@@ -49,6 +49,19 @@ const add = (request, response) => {
 
     return response.status(201).send(novoTreinador)
   })
+}
+
+const login = async (request, response) =>{
+const email = request.body.email 
+const senha = request.body.senha 
+const treinador = await treinadoresModel.findOne({email}) // retornando um treinador objeto inteiro, achando o treinando o treinador pelo email
+
+const senhaValida = bcrypt.compareSync(senha, treinador.senha) // aqui retorna um boolean comparando a senha do body com a do banco e a salvando na senhaValida
+
+if(senhaValida){
+  return response.status(200).send('Usuário logado')
+}
+return response.status(401).send('Usuário ou senha inválido')
 }
 
 const remove = (request, response) => {
@@ -126,8 +139,8 @@ const treinarPokemon = async (request, response) => {
 }
 
 const getPokemonById = async (request, response) => {
-  const treinadorId = request.body.treinadorId
-  const pokemonId = request.body.pokemonId
+  const treinadorId = request.params.treinadorId
+  const pokemonId = request.params.pokemonId
   const treinador = await treinadoresModel.findById(treinadorId)
   const pokemon = treinador.pokemons.find((pokemon) => {
     return pokemonId == pokemon._id
@@ -141,8 +154,8 @@ const getPokemonById = async (request, response) => {
 }
 
 const getAllPokemons = async (request, response) => {
-  const treinadorId = request.params.id
-  const treinador = await treinadoresModel.findById(id)
+  const treinadorId = request.params.treinadorId
+  const treinador = await treinadoresModel.findById(treinadorId)
 
   if (treinador) {
     return response.status(200).send(treinador.pokemons)
@@ -184,5 +197,8 @@ module.exports = {
   addPokemon,
   treinarPokemon,
   getPokemonById,
-  updatePokemon
+  updatePokemon,
+  getAllPokemons,
+  login
+
 }
