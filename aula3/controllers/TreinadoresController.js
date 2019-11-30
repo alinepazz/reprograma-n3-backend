@@ -55,13 +55,16 @@ const login = async (request, response) =>{
 const email = request.body.email 
 const senha = request.body.senha 
 const treinador = await treinadoresModel.findOne({email}) // retornando um treinador objeto inteiro, achando o treinando o treinador pelo email
-
+if (!treinador) {
+  return response.status(401).send('E-mail inválido')
+}
 const senhaValida = bcrypt.compareSync(senha, treinador.senha) // aqui retorna um boolean comparando a senha do body com a do banco e a salvando na senhaValida
 
-if(senhaValida){
-  return response.status(200).send('Usuário logado')
+if(!senhaValida) {
+return response.status(401).send('Senha inválida')
 }
-return response.status(401).send('Usuário ou senha inválido')
+return response.status(200).send('Usuário logado, mané!')
+
 }
 
 const remove = (request, response) => {

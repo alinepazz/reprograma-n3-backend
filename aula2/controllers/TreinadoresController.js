@@ -154,11 +154,11 @@ const updatePokemon = (request, response) => {
   const pokemon = request.body
 
   treinadoresModel.findOneAndUpdate(
-    { _id: treinadorId, 'pokemons.$._id': pokemonId },
+    { _id: treinadorId, 'pokemons.$._id': pokemonId }, // aqui achamos o pokemon
     { $set:
         {
-          'pokemons.$.nome': pokemon.nome,
-          'pokemons.$.foto': pokemon.foto
+          'pokemons.$.nome': pokemon.nome, // AQUI FAZEMOS O QUE QUEREMOS COM O POKEMON/mostro quais campos quero atualizar
+          'pokemons.$.foto': pokemon.foto // quais campos quero atualizar 
         }
     },
     { new: true },
@@ -181,5 +181,6 @@ module.exports = {
   addPokemon,
   treinarPokemon,
   getPokemonById,
-  updatePokemon
+  updatePokemon,
+  getAllPokemons
 }
